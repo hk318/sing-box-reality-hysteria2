@@ -420,8 +420,10 @@ modify_singbox() {
 
 
     # 修改sing-box
-    sed -i -e "/\"listen_port\":/{N; s/\"[0-9]*\"/\"$reality_port\"/}" \
-           -e "/\"tls\": {/,/\"server\":/{ /\"server_name\":/{N; s/\"server_name\": \".*\"/\"server_name\": \"$reality_server_name\"/ }}" /root/sbox/sbconfig_server.json
+    sed -i -e "/\"listen_port\":/s/[0-9]\+/$reality_port/" \
+          -e "/\"server_name\":/s/\".*\"/\"$reality_server_name\"/" \
+          -e "/\"server\":/s/\".*\"/\"$reality_server_name\"/" /root/sbox/sbconfig_server.json
+
 
     sed -i -e "/\"up_mbps\":/s/[0-9]\+/$brutal_up/" \
           -e "/\"down_mbps\":/s/[0-9]\+/$brutal_down/" /root/sbox/sbconfig_server.json
