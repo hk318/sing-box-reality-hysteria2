@@ -586,7 +586,10 @@ echo ""
 read -p "请输入想要偷取的域名,需要支持tls1.3 (default: itunes.apple.com): " reality_server_name
 reality_server_name=${reality_server_name:-itunes.apple.com}
 echo ""
-
+read -p "请输入up带宽 (default: 100): " brutal_up
+brutal_up=${brutal_up:-100}
+read -p "请输入down带宽 (default: 1000): " brutal_down
+brutal_down=${brutal_down:-1000}
 
 #ip地址
 server_ip=$(curl -s4m8 ip.sb -k) || server_ip=$(curl -s6m8 ip.sb -k)
@@ -604,7 +607,9 @@ SHORT_ID='$short_id'
 REALITY_UUID='$reality_uuid'
 REALITY_PORT='$reality_port'
 REALITY_SERVER_NAME='$reality_server_name'
-
+# Brutal
+BRUTAL_UP='$brutal_up'
+BRUTAL_DOWN='$brutal_down'
 EOF
 
 
@@ -639,17 +644,17 @@ cat > /root/sbox/sbconfig_server.json << EOF
           },
           "private_key": "$private_key",
           "short_id": ["$short_id"]
-        }
-      },
+        },
         "multiplex": {
             "enabled": true,
             "padding": true,
             "brutal": {
                 "enabled": true,
-                "up_mbps": 10,
-                "down_mbps": 1000
+                "up_mbps": $brutal_up,
+                "down_mbps": $brutal_down
             }
         }
+      }
   ],
   "outbounds": [
     {
