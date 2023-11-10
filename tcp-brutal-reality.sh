@@ -277,8 +277,8 @@ cat << EOF
         "padding": true,
         "brutal": {
             "enabled": true,
-            "up_mbps": 50, //上行速度，windows，macos不会生效可随便写
-            "down_mbps": $brutal_up
+            "up_mbps": 50, //上行速度，windows，macos不会生效所以可随便写
+            "down_mbps": $brutal_up //下行速度，对应服务器的下行速度，当然可自行修改
         }
     }
     },
@@ -410,15 +410,28 @@ modify_singbox() {
     reality_server_name=${reality_server_name:-$reality_current_server_name}
     echo ""
 
+    current_up=$(grep -o "BRUTAL_UP='[^']*'" /root/sbox/config | awk -F"'" '{print $2}')
+    read -p "请输入上行带宽up，对应客户端下行带宽 (当前为 $current_up): " brutal_up
+    brutal_up=${brutal_up:-$current_up}
+    current_down=$(grep -o "BRUTAL_DOWN='[^']*'" /root/sbox/config | awk -F"'" '{print $2}')
+    read -p "请输入下行带宽down (当前为 $current_down): " brutal_down
+    brutal_down=${brutal_down:-$current_down}
+    echo ""
+
 
     # 修改sing-box
     sed -i -e "/\"listen_port\":/{N; s/\"[0-9]*\"/\"$reality_port\"/}" \
-           -e "/\"tls\": {/,/\"server\":/{ /\"server_name\":/{N; s/\"server_name\": \".*\"/\"server_name\": \"$reality_server_name\"/ }}"
+           -e "/\"tls\": {/,/\"server\":/{ /\"server_name\":/{N; s/\"server_name\": \".*\"/\"server_name\": \"$reality_server_name\"/ }}" /root/sbox/sbconfig_server.json
+
+    sed -i -e "/\"up_mbps\":/s/[0-9]\+/$brutal_up/" \
+          -e "/\"down_mbps\":/s/[0-9]\+/$brutal_down/" /root/sbox/sbconfig_server.json
+
 
     #修改config
     sed -i "s/REALITY_PORT='[^']*'/REALITY_PORT='$reality_port'/" /root/sbox/config
     sed -i "s/REALITY_SERVER_NAME='[^']*'/REALITY_SERVER_NAME='$reality_server_name'/" /root/sbox/config
-
+    sed -i "s/BRUTAL_UP='[^']*'/BRUTAL_UP='$brutal_up'/" /root/sbox/config
+    sed -i "s/BRUTAL_DOWN='[^']*'/BRUTAL_DOWN='$brutal_down'/" /root/sbox/config
     # Restart sing-box service
     systemctl restart sing-box
 }
@@ -444,7 +457,7 @@ uninstall_singbox() {
     echo "卸载完成"
 }
 
-install_base
+# install_base
 
 # Check if reality.json, sing-box, and sing-box.service already exist
 if [ -f "/root/sbox/sbconfig_server.json" ] && [ -f "/root/sbox/config" ] && [ -f "/root/sbox/mianyang.sh" ] && [ -f "/usr/bin/mianyang" ] && [ -f "/root/sbox/sing-box" ] && [ -f "/etc/systemd/system/sing-box.service" ]; then
@@ -552,9 +565,9 @@ echo ""
 read -p "请输入想要偷取的域名,需要支持tls1.3 (default: itunes.apple.com): " reality_server_name
 reality_server_name=${reality_server_name:-itunes.apple.com}
 echo ""
-read -p "请输入up带宽 (default: 100): " brutal_up
+read -p "请输入上行up带宽，对应客户端的下行带宽 (default: 100): " brutal_up
 brutal_up=${brutal_up:-100}
-read -p "请输入down带宽 (default: 1000): " brutal_down
+read -p "请输入下行down带宽 (default: 1000): " brutal_down
 brutal_down=${brutal_down:-1000}
 
 #ip地址
