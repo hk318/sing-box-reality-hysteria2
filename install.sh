@@ -612,8 +612,8 @@ modify_singbox() {
     # 修改sing-box
     sed -i -e "/\"type\": \"vless\"/,/\"type\": \"hysteria2\"/ { /\"listen_port\":/s/[0-9]\+/$reality_port/ }" \
           -e "/\"type\": \"hysteria2\"/,/\"tls\":/ { /\"listen_port\":/s/[0-9]\+/$hy_port/ }" \
-          -e "/\"server_name\":/s/\"[^\"]*\"/\"$reality_server_name\"/" \
-          -e "/\"server\":/s/\"[^\"]*\"/\"$reality_server_name\"/" /root/sbox/sbconfig_server.json
+          -e "s/\"server_name\": *\"[^\"]*\"/\"server_name\": \"$reality_server_name\"/" \
+          -e "s/\"server\": *\"[^\"]*\"/\"server\": \"$reality_server_name\"/" /root/sbox/sbconfig_server.json
 
     #修改config
     sed -i "s/REALITY_PORT='[^']*'/REALITY_PORT='$reality_port'/" /root/sbox/config
