@@ -644,7 +644,8 @@ cat > /root/sbox/sbconfig_server.json << EOF
           },
           "private_key": "$private_key",
           "short_id": ["$short_id"]
-        },
+        }
+      },
         "multiplex": {
             "enabled": true,
             "padding": true,
@@ -653,8 +654,7 @@ cat > /root/sbox/sbconfig_server.json << EOF
                 "up_mbps": $brutal_up,
                 "down_mbps": $brutal_down
             }
-        }
-      }
+        }}
   ],
   "outbounds": [
     {
