@@ -445,8 +445,8 @@ modify_singbox() {
 
     # 修改sing-box
     sed -i -e "/\"listen_port\":/s/[0-9]\+/$reality_port/" \
-          -e "/\"server_name\":/s/\".*\"/\"$reality_server_name\"/" \
-          -e "/\"server\":/s/\".*\"/\"$reality_server_name\"/" /root/sbox/sbconfig_server.json
+            -e "/\"server_name\":/s/\"[^\"]*\"/\"$reality_server_name\"/" \
+            -e "/\"server\":/s/\"[^\"]*\"/\"$reality_server_name\"/" /root/sbox/sbconfig_server.json
 
     #修改config
     sed -i "s/REALITY_PORT='[^']*'/REALITY_PORT='$reality_port'/" /root/sbox/config
