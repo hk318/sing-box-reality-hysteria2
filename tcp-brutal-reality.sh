@@ -130,48 +130,9 @@ show_client_configuration() {
   public_key=$(grep -o "PUBLIC_KEY='[^']*'" /root/sbox/config | awk -F"'" '{print $2}')
   # 获取short_id
   short_id=$(grep -o "SHORT_ID='[^']*'" /root/sbox/config | awk -F"'" '{print $2}')
-  #聚合reality
-  reality_link="vless://$reality_uuid@$server_ip:$reality_port?encryption=none&flow=&security=reality&sni=$reality_server_name&fp=chrome&pbk=$public_key&sid=$short_id&type=tcp&headerType=none#sing-box-reality-brutal"
 
-  echo ""
-  echo ""
-  show_notice "$(red "Reality 通用链接和二维码和通用参数")" 
-  echo ""
-  echo ""
-  red "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━Reality 通用链接如下━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo ""
-  echo "$reality_link"
-  echo ""
-  red "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo ""
-  echo "" 
-  red "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━Reality 二维码如下━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo ""
-  qrencode -t UTF8 $reality_link
-  echo ""
-  red "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  brutal_up=$(grep -o "BRUTAL_UP='[^']*'" /root/sbox/config | awk -F"'" '{print $2}')
 
-
-  show_notice "clash-meta配置参数"
-cat << EOF
-
-proxies:        
-  - name: Reality
-    type: vless
-    server: $server_ip
-    port: $reality_port
-    uuid: $reality_uuid
-    network: grpc
-    udp: true
-    tls: true
-    flow: 
-    servername: $reality_server_name
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: $public_key
-      short-id: $short_id
-
-EOF
 
 show_notice "sing-box客户端配置参数"
 cat << EOF
@@ -311,9 +272,14 @@ cat << EOF
     "multiplex": {
         "enabled": true,
         "protocol": "h2mux",
-        "max_connections": 4,
+        "max_connections": 1,
         "min_streams": 4,
-        "padding": true
+        "padding": true,
+        "brutal": {
+            "enabled": true,
+            "up_mbps": 50, //上行速度，windows，macos不会生效可随便写
+            "down_mbps": $brutal_up
+        }
     }
     },
     {
